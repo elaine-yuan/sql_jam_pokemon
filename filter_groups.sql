@@ -26,47 +26,52 @@
 --   experience_growth: INTEGER
 --   percentage_male: DOUBLE
 
+-- Table: pokemon_forms
+--   pokemon_id: INTEGER
+--   form_name: VARCHAR
+--   primary_type: VARCHAR
+--   secondary_type: VARCHAR
+--   hp: INTEGER
+--   attack: INTEGER
+--   defense: INTEGER
+--   sp_attack: INTEGER
+--   sp_defense: INTEGER
+--   speed: INTEGER
+--   total_stats: INTEGER
+--   height_m: DOUBLE
+--   weight_kg: DOUBLE
+
 -- ============================================================
--- GROUP AND COUNT
+-- FILTER GROUPS
 -- ============================================================
 
--- https://sqljam.dev/?skin=pokemon&challenge=pokemon-group-count-per-type
--- Difficulty: Easy
--- Challenge: For every `primary_type`, return the type and how many Pokémon have it. Name the count column `n`.
--- My Solution:
-SELECT primary_type, COUNT(*) AS n
-FROM pokemon
-GROUP BY primary_type;
-
-
--- https://sqljam.dev/?skin=pokemon&challenge=pokemon-agg-by-generation
+-- https://sqljam.dev/?skin=pokemon&challenge=pokemon-group-legendary-per-gen
 -- Difficulty: Medium
--- Challenge: Has each generation got stronger? For every `generation`, return the generation, how many Pokémon it has as `pokemon`, and their average `total_stats` rounded to 1 decimal as `avg_stats`.
+-- Challenge: Count the Legendary Pokémon in each generation, then keep only the generations with at least 10 of them. Return `generation` and the count as `legendaries`.
+-- My Solution:
+SELECT generation, COUNT(*) AS legendaries
+FROM pokemon
+WHERE is_legendary=TRUE 
+GROUP BY generation
+HAVING COUNT(*)>=10;
+
+
+-- https://sqljam.dev/?skin=pokemon&challenge=pokemon-having-crowded-types
+-- Difficulty: Medium
+-- Challenge: Which types are crowded? Return the `primary_type` and how many Pokémon have it as `pokemon`, for types with at least 40 Pokémon.
 -- My Solution:
 SELECT generation, COUNT(*) AS pokemon, ROUND(AVG(total_stats),1) AS avg_stats
 FROM pokemon
 GROUP BY generation;
 
 
--- https://sqljam.dev/?skin=pokemon&challenge=pokemon-group-legendary-per-type
--- Difficulty: Medium
--- Challenge: For each `primary_type` with at least 40 Pokémon, return the type, how many Pokémon it has as `total`, and how many of those are Legendary as `legendary` — all in the same row.
--- My Solution:
-SELECT primary_type, COUNT(*) AS legendaries
-FROM pokemon
-WHERE is_legendary=TRUE 
-GROUP BY primary_type
-ORDER BY legendaries DESC, primary_type ASC;
-
-
--- https://sqljam.dev/?skin=pokemon&challenge=pokemon-group-stat-tiers
+-- https://sqljam.dev/?skin=pokemon&challenge=pokemon-having-forms-multiple
 -- Difficulty: Hard
--- Challenge: Sort every Pokémon by its `total_stats`: 600 or more is 'pseudo-legendary', 500 to 599 is 'strong', 400 to 499 is 'middling', and anything else is 'weak'. Return the label as `tier` and how many Pokémon are in it as `n`.
+-- Challenge: A handful of Pokémon have more than one alternate form. Return the species `name` and how many forms it has as `forms`, for every Pokémon with more than one.
 -- My Solution:
-SELECT CASE 
-  WHEN total_stats>=600 THEN 'pseudo-legendary'
-  WHEN total_stats>=500 AND total_stats<600 THEN 'strong'
-  WHEN total_stats>=400 AND total_stats<500 THEN 'middling'
-  ELSE 'weak' END AS tier, COUNT(*) AS n
-FROM pokemon
-GROUP BY tier;
+SELECT name, COUNT(DISTINCT form_name) AS forms
+FROM pokemon p
+LEFT JOIN pokemon_forms pf
+ON p.id=pf.pokemon_id
+GROUP BY name
+HAVING COUNT(DISTINCT form_name)>1;
