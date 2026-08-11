@@ -1,7 +1,7 @@
 # SQL Jam: Pokemon SQL Challenges
 This repository is a collection of 48 practice SQL queries using a Pokémon dataset on SQL Jam, a free, in-browser query playground. 
 
-This is part of my ongoing SQL practice and explores Pokemon data through progressively more complex queries, including filtering, aggregation, joins, subqueries, and other SQL techniques.
+This is part of my ongoing SQL practice and explores Pokemon data through progressively more complex queries, including filtering, aggregation, joins, subqueries, CTES, window functions, and other SQL techniques.
 
 The challenges can be completed directly in SQL Jam: [Start the Pokemon SQL Challenges](https://sqljam.dev/?skin=pokemon&challenge=pokemon-select-name-type)
 
